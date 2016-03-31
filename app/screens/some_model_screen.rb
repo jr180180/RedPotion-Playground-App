@@ -17,29 +17,38 @@ class SomeModelScreen < PM::DataTableScreen
 
   def on_load
     set_nav_bar_button :right, title: "Add", action: :create
-    set_nav_bar_button :left, title: "Delete First", action: :destroy
+    set_nav_bar_button :left, title: "Delete All", action: :destroy
   end
 
   def create
     @length = @names.length
-    @names.create(name: "Emily#{@length + 1}", id: @length + 1)
+    @names.create(
+        name: "Emily#{@length + 1}",
+        id: @length + 1
+    )
     cdq.save
   end
 
   def destroy
 
     if @names.length > 0
-      @names.first.destroy
+
+      @names.all.each do |name|
+        name.destroy
+      end
       cdq.save
     end
+    
   end
 
   def msg
     mp "clicked"
   end
 
-  def delete_row(index_path)
+  def on_cell_deleted(cell, index_path)
     @names.all[index_path.row].destroy
     cdq.save
+
+    false
   end
 end
